@@ -50,6 +50,10 @@ protected:
   bool scaleFlag = false, translateFlag = false, rotateFlag = false;  // Camera movement state information.
 
   bool lightMotionFlag = false;
+  bool FOVFlag = false;
+  bool animationFarFlag = false;
+  bool animationNearFlag = false;
+  bool animateCameraFlag = false;
 
   void mousePressEvent(QMouseEvent *event); 
   void mouseMoveEvent(QMouseEvent *event);
