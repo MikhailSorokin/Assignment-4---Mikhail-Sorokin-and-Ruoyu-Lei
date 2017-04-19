@@ -343,6 +343,7 @@ void GLview::light_motion() {
 
 void GLview::animate_fov() {
   cout << "implement animate_fov()" << endl;
+  if (mesh == NULL) return; FOVFlag = !FOVFlag;
 }
 
 void GLview::animate_near() {
@@ -351,10 +352,12 @@ void GLview::animate_near() {
 
 void GLview::animate_far() {
   cout << "implement animate_far()" << endl;
+  if (mesh == NULL) return; animationFarFlag = !animationFarFlag;
 }
 
 void GLview::animate_camera() {
   cout << "implement animate_camera()" << endl;
+  if (mesh == NULL) return; animateCameraFlag  = !animateCameraFlag;
 }
 
 void GLview::cycle_material() {
