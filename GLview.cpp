@@ -288,6 +288,32 @@ void GLview::updateGLview(float dt) {
     QQuaternion q1 = QQuaternion::fromAxisAndAngle(lookUp, dt * 30);
     LightDirection = q1.rotatedVector(LightDirection);
   }
+	
+ /********** Camera Parameter Animations (implement all) *********/
+  if (FOVFlag) {
+    //Animate the FOV Plane so that it goes in between 20 and 100 degrees
+	  
+    //TODO: Smoothly lerp between angles of 20 and 100 degrees using some sort of time step interval. 
+  }
+	
+  if (animationFarFlag) {
+    //Animate the Far Plane so that it goes in between 500 and 1000
+	  
+    //TODO: Smoothly lerp between far value of 500 and 1000 using some sort of time step interval. 
+  }
+	
+  if (animationNearFlag) {
+    //Animate the Near Plane so that it goes in between 1 and 500
+	  
+    //TODO: Smoothly lerp between near value of 1 and 500 using some sort of time step interval. 
+  }
+	
+  if (animateCameraFlag) {
+    //Animate the camera position about the look center in the look up direction.
+
+	  
+    //TODO: Use Quaternion for rotation.
+  }
 }
 
 
@@ -320,7 +346,7 @@ void GLview::animate_fov() {
 }
 
 void GLview::animate_near() {
-  cout << "implement animate_near()" << endl;
+  if (mesh == NULL) return; animationNearFlag = !animationNearFlag;
 }
 
 void GLview::animate_far() {
