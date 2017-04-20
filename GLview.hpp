@@ -55,6 +55,8 @@ protected:
   bool animationNearFlag = false;
   bool animateCameraFlag = false;
 
+  bool cycle_mtl_flag = false;
+
   void mousePressEvent(QMouseEvent *event); 
   void mouseMoveEvent(QMouseEvent *event);
   void toggleRotate() { 

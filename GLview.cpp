@@ -7,6 +7,7 @@
 using namespace std;
 
 float copysign0(float x, float y) { return (y == 0.0f) ? 0 : copysign(x,y); }
+static int counter = -1;
 
 void Matrix2Quaternion(QQuaternion &Q, QMatrix4x4 &M) {
   Q.setScalar(sqrt( max( 0.0f, 1 + M(0,0)  + M(1,1) + M(2,2) ) ) / 2);
@@ -83,6 +84,7 @@ void GLview::paintGL() {
   for(long group_idx = 0; group_idx < (long)mesh->groups.size(); group_idx++) {
     vector<Mesh_Material> &materials = mesh->groups[group_idx].materials;
     for(long mtl_idx = 0; mtl_idx < (long)materials.size(); mtl_idx++) {
+      if (cycle_mtl_flag && (mtl_idx != counter)) continue;
       if(materials[mtl_idx].n_triangles == 0) continue;
       QMatrix4x4 model;
       model.translate(mesh->model_translate);
@@ -362,8 +364,13 @@ void GLview::animate_camera() {
 
 void GLview::cycle_material() {
   cout << "implement cycle_material()" << endl;
+  if (mesh == NULL) return;
 
-  QString material_name_text = "Material name is here.";
+  vector<string> materials = {"default","tyre","body","generic","wheel","glow","glass","tread"};
+  cycle_mtl_flag = true;
+  counter = (counter + 1) % 8;
+
+  QString material_name_text = QString::fromStdString("Material name is " + materials[counter]);
   QMessageBox::information(this, "Material Name", material_name_text);
 }
 
@@ -373,6 +380,7 @@ void GLview::animate_material() {
 
 void GLview::cycle_group() {
   cout << "implement cycle_group()" << endl;
+
   QString group_name_text = "Cycle group name here.";
   QMessageBox::information(this, "Group Name", group_name_text);
   
