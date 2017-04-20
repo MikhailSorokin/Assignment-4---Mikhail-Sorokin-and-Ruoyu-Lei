@@ -8,6 +8,7 @@ using namespace std;
 
 float copysign0(float x, float y) { return (y == 0.0f) ? 0 : copysign(x,y); }
 static int counter = -1;
+static int ani_mtl_cont = -1;
 
 void Matrix2Quaternion(QQuaternion &Q, QMatrix4x4 &M) {
   Q.setScalar(sqrt( max( 0.0f, 1 + M(0,0)  + M(1,1) + M(2,2) ) ) / 2);
@@ -85,9 +86,17 @@ void GLview::paintGL() {
     vector<Mesh_Material> &materials = mesh->groups[group_idx].materials;
     for(long mtl_idx = 0; mtl_idx < (long)materials.size(); mtl_idx++) {
       if (cycle_mtl_flag && (mtl_idx != counter)) continue;
-      if(materials[mtl_idx].n_triangles == 0) continue;
+      if (materials[mtl_idx].n_triangles == 0) continue;
+      
       QMatrix4x4 model;
-      model.translate(mesh->model_translate);
+
+      if (animate_mtl_flag && ani_mtl_cont == mtl_idx) {
+        QVector3D moveup(0,0,1.2);
+        model.translate(moveup);
+      } else {
+        model.translate(mesh->model_translate);
+      }
+
       model.rotate(mesh->model_rotation);
       model.scale(mesh->model_sx, mesh->model_sy, mesh->model_sz);      
       QMatrix4x4 view, projection;
@@ -376,6 +385,14 @@ void GLview::cycle_material() {
 
 void GLview::animate_material() {
   cout << "implement animate_material()" << endl;
+  if (mesh == NULL) return;
+
+  vector<string> materials = {"default","tyre","body","generic","wheel","glow","glass","tread"};
+  animate_mtl_flag = true;
+  ani_mtl_cont = (ani_mtl_cont + 1) % 8;
+
+  QString material_name_text = QString::fromStdString("Animating material: " + materials[ani_mtl_cont]);
+  QMessageBox::information(this, "Material Name", material_name_text);
 }
 
 void GLview::cycle_group() {
