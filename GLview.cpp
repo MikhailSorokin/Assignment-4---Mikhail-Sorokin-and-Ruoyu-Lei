@@ -8,7 +8,7 @@ using namespace std;
 
 float copysign0(float x, float y) { return (y == 0.0f) ? 0 : copysign(x,y); }
 static int counter = -1;
-static int ani_mtl_cont = -1;
+static int ani_mtl_cont = 0;
 static double zaxis = 0.00;
 static int moveup_counter = 0;
 static int movedown_counter = 0;
@@ -81,13 +81,23 @@ void GLview::resizeGL( int w, int h ) {  glViewport( 0, 0, w, qMax( h, 1 ) ); }
 void GLview::paintGL() {
   if(mesh == NULL) return; // Nothing to draw.
 
-  if (animate_mtl_flag) {
-    if (moveup_counter < 120 ){
-      zaxis += 0.01;
-      moveup_counter++;
-    } else if (movedown_counter < 120){
-      zaxis -= 0.01;
-      movedown_counter++;
+  if (animate_mtl_flag && ani_mtl_cont < 9) {
+    if (ani_mtl_cont == 0) {
+      ani_mtl_cont++;
+      moveup_counter = 0;
+      movedown_counter = 0;
+    } else {
+      if (moveup_counter < 120 ){
+        zaxis += 0.01;
+        moveup_counter++;
+      } else if (movedown_counter < 120){
+        zaxis -= 0.01;
+        movedown_counter++;
+      } else {
+        ani_mtl_cont++;
+        moveup_counter = 0;
+        movedown_counter = 0;
+      }
     }
   }
 
@@ -404,10 +414,12 @@ void GLview::animate_material() {
   zaxis = 0.00;
   moveup_counter = 0;
   movedown_counter = 0;
+  ani_mtl_cont = 0;
+  animate_mtl_flag = true;
 
   vector<string> materials = {"default","tyre","body","generic","wheel","glow","glass","tread"};
-  animate_mtl_flag = true;
-  ani_mtl_cont = (ani_mtl_cont + 1) % 8;
+  
+  //ani_mtl_cont = (ani_mtl_cont + 1) % 8;
 
   //QString material_name_text = QString::fromStdString("Animating material: " + materials[ani_mtl_cont]);
   //QMessageBox::information(this, "Material Name", material_name_text);
