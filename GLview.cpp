@@ -12,6 +12,7 @@ static int ani_mtl_cont = 0;
 static double zaxis = 0.00;
 static int moveup_counter = 0;
 static int movedown_counter = 0;
+static int cycle_group_cont = -1;
 
 void Matrix2Quaternion(QQuaternion &Q, QMatrix4x4 &M) {
   Q.setScalar(sqrt( max( 0.0f, 1 + M(0,0)  + M(1,1) + M(2,2) ) ) / 2);
@@ -100,13 +101,23 @@ void GLview::paintGL() {
       }
     }
   }
-
+/*
+  if (cycle_group_flag && cycle_group_cont > 67) {
+    cycle_group_flag = false;
+    cycle_group_cont = -1;
+  }
+*/
   // Clear the frame buffer with the current clearing color and clear depth buffer.
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   shaders.bind();
   for(long group_idx = 0; group_idx < (long)mesh->groups.size(); group_idx++) {
     vector<Mesh_Material> &materials = mesh->groups[group_idx].materials;
+    // cout <<"group name: " <<mesh->groups[group_idx].name<<"\n";
+
+    if (cycle_group_flag && cycle_group_cont != group_idx) continue;
+    cout <<"gourp index is: "<<group_idx<<endl;
+
     for(long mtl_idx = 0; mtl_idx < (long)materials.size(); mtl_idx++) {
       if (cycle_mtl_flag && (mtl_idx != counter)) continue;
       if (materials[mtl_idx].n_triangles == 0) continue;
@@ -176,6 +187,7 @@ void GLview::keyPressGL(QKeyEvent* e) {
   case Qt::Key_R: toggleRotate();    break;
   case Qt::Key_S: toggleScale();     break;
   case Qt::Key_T: toggleTranslate();     break;
+  case Qt::Key_7: cycle_group();    break;
   default: QOpenGLWidget::keyPressEvent(e);  break;
   }
 }
@@ -416,21 +428,23 @@ void GLview::animate_material() {
   movedown_counter = 0;
   ani_mtl_cont = 0;
   animate_mtl_flag = true;
-
-  vector<string> materials = {"default","tyre","body","generic","wheel","glow","glass","tread"};
   
-  //ani_mtl_cont = (ani_mtl_cont + 1) % 8;
-
-  //QString material_name_text = QString::fromStdString("Animating material: " + materials[ani_mtl_cont]);
-  //QMessageBox::information(this, "Material Name", material_name_text);
 }
 
 void GLview::cycle_group() {
-  cout << "implement cycle_group()" << endl;
+  cout << "To save time, press key 7 to call this function" << endl;
 
-  QString group_name_text = "Cycle group name here.";
+  cycle_group_flag = true;
+  string obj_name = cycle_group_cont == -1 ? "default" : "object__" + to_string(cycle_group_cont);
+  QString group_name_text = QString::fromStdString("Group name: " + obj_name);
   QMessageBox::information(this, "Group Name", group_name_text);
-  
+
+  if (cycle_group_cont > 67) {
+    cycle_group_cont = -1;
+    cycle_group_flag = false;
+  } else {
+    cycle_group_cont++;
+  }
 }
 
 void GLview::animate_rotate_wheels() {

@@ -57,6 +57,7 @@ protected:
 
   bool cycle_mtl_flag = false;
   bool animate_mtl_flag = false;
+  bool cycle_group_flag = false;
 
   void mousePressEvent(QMouseEvent *event); 
   void mouseMoveEvent(QMouseEvent *event);
