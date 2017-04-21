@@ -120,7 +120,7 @@ $(OBJECTS) $(LIBS)
 <<
 
 qmake: FORCE
-	@$(QMAKE) -o Makefile.Release cmsc427.pro
+	@$(QMAKE) -o Makefile.Release cmsc427.pro -spec win32-msvc2015
 
 qmake_all: FORCE
 
@@ -1096,6 +1096,20 @@ release\moc_cmsc427.cpp: C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtGui\QtGui \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtOpenGL\qglshaderprogram.h \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtOpenGL\qtopenglversion.h \
 		ui_cmsc427.h \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QAction \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QApplication \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QButtonGroup \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QHBoxLayout \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QHeaderView \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMainWindow \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMenu \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMenuBar \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QPushButton \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QStatusBar \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QVBoxLayout \
+		GLview.hpp \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QOpenGLWidget \
+		Mesh.hpp \
 		cmsc427.hpp \
 		release\moc_predefs.h \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\bin\moc.exe
@@ -2521,7 +2535,21 @@ release\cmsc427.obj: cmsc427.cpp cmsc427.hpp \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtOpenGL\qglpixelbuffer.h \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtOpenGL\qglshaderprogram.h \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtOpenGL\qtopenglversion.h \
-		ui_cmsc427.h
+		ui_cmsc427.h \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QAction \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QApplication \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QButtonGroup \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QHBoxLayout \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QHeaderView \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMainWindow \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMenu \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QMenuBar \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QPushButton \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QStatusBar \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QVBoxLayout \
+		GLview.hpp \
+		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtWidgets\QOpenGLWidget \
+		Mesh.hpp
 
 release\Mesh.obj: Mesh.cpp Mesh.hpp \
 		C:\Qt\Qt5.8.0\5.8\msvc2015_64\include\QtGui\QtGui \

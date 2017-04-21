@@ -116,7 +116,7 @@ void GLview::paintGL() {
     // cout <<"group name: " <<mesh->groups[group_idx].name<<"\n";
 
     if (cycle_group_flag && cycle_group_cont != group_idx) continue;
-    cout <<"gourp index is: "<<group_idx<<endl;
+    //cout <<"gourp index is: "<<group_idx<<endl;
 
     for(long mtl_idx = 0; mtl_idx < (long)materials.size(); mtl_idx++) {
       if (cycle_mtl_flag && (mtl_idx != counter)) continue;
@@ -339,26 +339,64 @@ void GLview::updateGLview(float dt) {
  /********** Camera Parameter Animations (implement all) *********/
   if (FOVFlag) {
     //Animate the FOV Plane so that it goes in between 20 and 100 degrees
-	  
+    if (yfov <= 100 && incrementAngle) {
+        yfov += dt * 3;
+    } else if (!incrementAngle && yfov >= 20.f) {
+        yfov -= dt * 3;
+    } else {
+        incrementAngle = !incrementAngle;
+    }
     //TODO: Smoothly lerp between angles of 20 and 100 degrees using some sort of time step interval. 
   }
 	
   if (animationFarFlag) {
-    //Animate the Far Plane so that it goes in between 500 and 1000
+    //Animate the Far Plane so that it goes in between 5 and 50
+      if (fardist <= 50.f && incrementAngle) {
+          cout << "Value: " << fardist << endl;
+          fardist += dt * 30;
+      } else if (!incrementAngle && fardist >= 5.f) {
+          cout << "Value: " << fardist << endl;
+          fardist -= dt * 30;
+      } else {
+          cout << "Value: " << fardist << endl;
+          incrementAngle = !incrementAngle;
+      }
 	  
     //TODO: Smoothly lerp between far value of 500 and 1000 using some sort of time step interval. 
   }
 	
   if (animationNearFlag) {
-    //Animate the Near Plane so that it goes in between 1 and 500
-	  
+    //Animate the Near Plane so that it goes in between 1 and 50
+      if (neardist <= 50.f && incrementAngle) {
+          cout << "Value: " << neardist << endl;
+          neardist += dt * 30;
+      } else if (!incrementAngle && neardist > 1.f) {
+          cout << "Value: " << neardist << endl;
+          neardist -= dt * 30;
+      } else {
+          cout << "Value: " << neardist << endl;
+          incrementAngle = !incrementAngle;
+      }
+
     //TODO: Smoothly lerp between near value of 1 and 500 using some sort of time step interval. 
   }
 	
   if (animateCameraFlag) {
     //Animate the camera position about the look center in the look up direction.
+      // Get rotation from -z to camera. Rotate the camera in the wold.
+      QQuaternion revQ = camrot.conjugate();
 
-	  
+      QVector3D up = revQ.rotatedVector(lookUp);
+      QQuaternion newrot2 = QQuaternion::fromAxisAndAngle(lookUp, dt * 10);
+      revQ = newrot2 * revQ;
+      revQ.normalize();
+
+      // Go back to camera frame.
+      camrot = revQ.conjugate().normalized();
+
+      // Update camera position.
+      eye = newrot2.rotatedVector(eye - lookCenter) + lookCenter;
+
     //TODO: Use Quaternion for rotation.
   }
 }
@@ -390,6 +428,7 @@ void GLview::light_motion() {
 
 void GLview::animate_fov() {
   cout << "implement animate_fov()" << endl;
+  yfov = 55;
   if (mesh == NULL) return; FOVFlag = !FOVFlag;
 }
 
@@ -398,6 +437,7 @@ void GLview::animate_near() {
 }
 
 void GLview::animate_far() {
+  fardist = 50.f;
   cout << "implement animate_far()" << endl;
   if (mesh == NULL) return; animationFarFlag = !animationFarFlag;
 }

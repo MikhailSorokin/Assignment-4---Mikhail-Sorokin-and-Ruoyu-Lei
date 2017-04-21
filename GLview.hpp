@@ -50,7 +50,10 @@ protected:
   bool scaleFlag = false, translateFlag = false, rotateFlag = false;  // Camera movement state information.
 
   bool lightMotionFlag = false;
+
   bool FOVFlag = false;
+  bool incrementAngle = false; //if true, we are adding dt, else we are subtracing dt
+
   bool animationFarFlag = false;
   bool animationNearFlag = false;
   bool animateCameraFlag = false;
