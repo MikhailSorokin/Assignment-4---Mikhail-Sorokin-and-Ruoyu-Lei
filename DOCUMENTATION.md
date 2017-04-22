@@ -1,4 +1,4 @@
-Authors - Mikhail Sorokin and Ruoyu Lei
+﻿Authors - Mikhail Sorokin and Ruoyu Lei
 
 Programming Assignment 4: Materials, Texture, and Transformations
 ----------
@@ -13,57 +13,53 @@ Programming Assignment 4: Materials, Texture, and Transformations
 
 There are four parts of this:
 
-- FOV Animation. Incrementing the field of view makes all objects appear smaller, while decreasing it makes the objects appear bigger.
+- FOV Animation. Incrementing the field of view makes all objects appear smaller and increases the range of objects to see, while decreasing it makes the objects appear bigger and decreases the range of objects to see.
 
-- Near Plane. Increasing the near plane makes the objects disappear, while decreasing it makes objects appear.
+![foo](img/fov.png)
+
+- Near Plane. Increasing the near plane value makes the objects disappear from the front, while decreasing it makes objects appear from the front.
+
+![foo](img/near.png)
+
+- Far Plane. Increasing the far plane value makes the objects disappear from the back, while decreasing it makes objects appear from the back.
+
+![foo](img/far.png)
+
+- Animate Camera. This camera moves in a circle horizontally around the object in view.
+
+![foo](img/animate_camera.png)
+
+[PICTURE HERE]
 
 # Materials
 
-TO BE DONE
+- Cycle through each material. 
+We mofified paintGL() to only draw one material at a time.
+
+To use this function, keep right clicking "cycle material" to iterate all materials. Notice that the first material "default" won't show anything because it's blank. You will start seeing actual meshes starting from the second material.
+
+![foo](img/cycle_material.png)
+
+- Animate the selected material. 
+This function iterates through every material and move them up and back down. It's implemented by translating using a 3D vector, which is (0,0,z). X and Y remains the same all the time and we change z to move it along the z axis.
+
+To use this function, you only need to right click "animate material" onces and each material will move up and down. This function finishes when all 8 materials have been iterated.
+
+![foo](img/animate_material.png)
 
 # Groups
 
-TO BE DONE
+- Cycle each group.
+This function iterate all groups of objects and only draw the selected group and its name in the message box at a time. You have to keep right click "cycle group" to iterate all of them. NOTICE: to save time, we set key "7" to be the shortcut of this function, so you can keep pressing 7 to call this function and enter to omit the message box.
+
+![foo](img/cycle_group.png)
+
+- Animate wheels
+
+This function starts off in startVBO, and returns a list of all of the vertices to calculate that are the vertices of the wheel spoke. Then, the centroid of the wheel spoke is calculated here, and the wheels are first translated to the negative of this position, then rotated by a fixed amount at the up vector that we have set and then translated again by the center in place. This is all done in the paintGL function.
+
+![foo](img/animate_wheels.png)
 
 
 # BONUS
 
-We tried to implement bilateral filter and did researches in 3 papers on this topic. Although not succeed because there is something glitchy about our implementation that makes the program keep crashing, we'd like to wirte down some insights on this algorithm. 
-
-The bilateral introduced in the [paper](http://people.csail.mit.edu/thouis/JDD03.pdf) linked in the spec and [another paper](http://mesh.brown.edu/DGP/pdfs/Fleishman-sg03.pdf) by Fleishman [2003] suggest that the 3D bilateral filter evolved from the 2D bilateral filter by Black et al. [1998]. It is an algorithm used to smooth the surface of a mesh using Gaussian statistics.
-
-The formula is given as:
-
-For each vertex p, the smoothed vertex p` is computed by
-
-![foo](img_before/formula3.png)
-
-where k(p) is denoted:
-
-![foo](img_before/formula4.png)
-
-Here is a detailed breakdown of the forumla and how to implement it:
-
-The summation notation suggests that in order to get p` for a vertex p, it has to iterate through all faces. Therefore the time complexity of this algorithm would be O(n * m), where n is the number of vertices and m is the number of faces.
-
-The first element Πq(p) we need to figure out is the predictor. It is the projection of p to the plane tangent to q. As shown below:
-
-![foo](img_before/tangent.png)
-
-It can be achieved by finding the intersection of the perpendicular through the point with the tangent plane. In other words, it’s the nearest point on the tangent plane to the given point.
-
-Alternatively, [Fleishman [2003]](http://mesh.brown.edu/DGP/pdfs/Fleishman-sg03.pdf) provided a pesudocode fragment in the paper to demostrate how this Πq(p) can be calculated. Notice this method does not iterate all surface, but only the onces that are neighbors to the point.
-
-![foo](img_before/pesudocode.png)
-
-aq is the area of the surface q.
-
-Next we move on to f and g, spatial weight and influence weight. They control amount of smoothness and "how far" we'd like to spread the effect.
-
-To find f, we first find the distance ||p − cq || between p and the centroid cq of q. Then we put the distance into gaussian function to get f.  The σf in guassian is very important. We will explain it after.
-
-To find, we use a similar approch. First find the distance ||Πq (p) − p|| between Πq(p) and the position of p, and then use a gaussian.
-
-Then we move on to k(p). This is very similar to the summation above. The prupose of doing 1/k(p) is to devide the weighted and influenced sum with their weights.
-
-Last but not least, we need to mollify this function to make it perform well. As explained earlier, σf is very important because it determines the quality of smoothing. Previously, [Durand and Dorsey [2002]](https://people.csail.mit.edu/fredo/PUBLI/Siggraph2002/DurandBilateral.pdf) uses 1/5 of the mean edge over all edges as σf. It works decently but we can mollify it the make it perform better. This is done using σf = 1/2 σf as introduced in this paper. There are some sample images at the end of the paper to illustrate the effect influenced by change of σf.

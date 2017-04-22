@@ -13,13 +13,23 @@ Programming Assignment 4: Materials, Texture, and Transformations
 
 There are four parts of this:
 
-- FOV Animation. Incrementing the field of view makes all objects appear smaller, while decreasing it makes the objects appear bigger.
+- FOV Animation. Incrementing the field of view makes all objects appear smaller and increases the range of objects to see, while decreasing it makes the objects appear bigger and decreases the range of objects to see.
 
-- Near Plane. Increasing the near plane makes the objects disappear from the front, while decreasing it makes objects appear.
+![foo](img/fov.png)
 
-- Far Plane. Increasing the near plane makes the objects disappear from the back, while decreasing it makes objects appear from the back.
+- Near Plane. Increasing the near plane value makes the objects disappear from the front, while decreasing it makes objects appear from the front.
 
-- Animate Camera. 
+![foo](img/near.png)
+
+- Far Plane. Increasing the far plane value makes the objects disappear from the back, while decreasing it makes objects appear from the back.
+
+![foo](img/far.png)
+
+- Animate Camera. This camera moves in a circle horizontally around the object in view.
+
+![foo](img/animate_camera.png)
+
+[PICTURE HERE]
 
 # Materials
 
@@ -45,6 +55,10 @@ This function iterate all groups of objects and only draw the selected group and
 ![foo](img/cycle_group.png)
 
 - Animate wheels
+
+This function starts off in startVBO, and returns a list of all of the vertices to calculate that are the vertices of the wheel spoke. Then, the centroid of the wheel spoke is calculated here, and the wheels are first translated to the negative of this position, then rotated by a fixed amount at the up vector that we have set and then translated again by the center in place. This is all done in the paintGL function.
+
+![foo](img/animate_wheels.png)
 
 
 # BONUS
