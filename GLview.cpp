@@ -88,7 +88,7 @@ void GLview::paintGL() {
       moveup_counter = 0;
       movedown_counter = 0;
     } else {
-      if (moveup_counter < 120 ){
+      if (moveup_counter < 120){
         zaxis += 0.01;
         moveup_counter++;
       } else if (movedown_counter < 120){
@@ -101,6 +101,22 @@ void GLview::paintGL() {
       }
     }
   }
+
+  if (rotate_wheels_flag) {
+    zaxis += 300.f * 0.01f;
+  } else if (swerve_wheels_flag) {
+      if (moveup_counter < 45){
+        zaxis += 0.01 * 100.f;
+        moveup_counter++;
+      } else if (movedown_counter < 45){
+        zaxis -= 0.01 * 100.f;
+        movedown_counter++;
+      } else {
+        moveup_counter = 0;
+        movedown_counter = 0;
+      }
+  }
+
 /*
   if (cycle_group_flag && cycle_group_cont > 67) {
     cycle_group_flag = false;
@@ -113,10 +129,8 @@ void GLview::paintGL() {
   shaders.bind();
   for(long group_idx = 0; group_idx < (long)mesh->groups.size(); group_idx++) {
     vector<Mesh_Material> &materials = mesh->groups[group_idx].materials;
-    // cout <<"group name: " <<mesh->groups[group_idx].name<<"\n";
 
     if (cycle_group_flag && cycle_group_cont != group_idx) continue;
-    //cout <<"gourp index is: "<<group_idx<<endl;
 
     for(long mtl_idx = 0; mtl_idx < (long)materials.size(); mtl_idx++) {
       if (cycle_mtl_flag && (mtl_idx != counter)) continue;
@@ -132,7 +146,20 @@ void GLview::paintGL() {
         model.translate(mesh->model_translate);
       }
 
-      model.rotate(mesh->model_rotation);
+      if (rotate_wheels_flag && materials[mtl_idx].name == "wheel") {
+          cout << "(" << mesh->groups[group_idx].center.x() << ", " << mesh->groups[group_idx].center.y() << ", " << mesh->groups[group_idx].center.z() << ")" << endl;
+          model.translate(mesh->groups[group_idx].center);
+          model.rotate(zaxis, 1.0f, 0.0f, 0.0f);
+          model.translate(-mesh->groups[group_idx].center);
+      } else if (swerve_wheels_flag &&
+                 (materials[mtl_idx].name == "tyre" || materials[mtl_idx].name == "wheel" || materials[mtl_idx].name == "tread")) {
+          model.translate(mesh->groups[group_idx].center);
+          model.rotate(zaxis, lookUp);
+          model.translate(-mesh->groups[group_idx].center);
+      } else {
+          model.rotate(mesh->model_rotation);
+      }
+
       model.scale(mesh->model_sx, mesh->model_sy, mesh->model_sz);      
       QMatrix4x4 view, projection;
 
@@ -383,21 +410,17 @@ void GLview::updateGLview(float dt) {
 	
   if (animateCameraFlag) {
     //Animate the camera position about the look center in the look up direction.
-      // Get rotation from -z to camera. Rotate the camera in the wold.
-      QQuaternion revQ = camrot.conjugate();
+    QQuaternion revQ = camrot.conjugate();
 
-      QVector3D up = revQ.rotatedVector(lookUp);
-      QQuaternion newrot2 = QQuaternion::fromAxisAndAngle(lookUp, dt * 10);
-      revQ = newrot2 * revQ;
+    QQuaternion newrot = QQuaternion::fromAxisAndAngle(lookUp, 25.0 * dt);
+      revQ = newrot * revQ;
       revQ.normalize();
 
       // Go back to camera frame.
       camrot = revQ.conjugate().normalized();
 
       // Update camera position.
-      eye = newrot2.rotatedVector(eye - lookCenter) + lookCenter;
-
-    //TODO: Use Quaternion for rotation.
+      eye = newrot.rotatedVector(eye - lookCenter) + lookCenter;
   }
 }
 
@@ -472,6 +495,8 @@ void GLview::animate_material() {
 }
 
 void GLview::cycle_group() {
+  if (mesh == NULL)
+
   cout << "To save time, press key 7 to call this function" << endl;
 
   cycle_group_flag = true;
@@ -488,10 +513,17 @@ void GLview::cycle_group() {
 }
 
 void GLview::animate_rotate_wheels() {
-  cout << "implement animate_rotate_wheels()" << endl;
-  
+    zaxis = 0.00;
+    moveup_counter = 0;
+    movedown_counter = 0;
+    ani_mtl_cont = 0;
+    if (mesh == NULL) return; rotate_wheels_flag = !rotate_wheels_flag;
 }
 
 void GLview::animate_swerve_wheels() {
-  cout << "implement animate_swerve_wheels()" << endl;
+    zaxis = 0.00;
+    moveup_counter = 0;
+    movedown_counter = 0;
+    ani_mtl_cont = 0;
+    if (mesh == NULL) return; swerve_wheels_flag = !swerve_wheels_flag;
 }

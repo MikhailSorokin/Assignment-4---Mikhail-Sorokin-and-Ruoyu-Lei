@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <set>
 
 #include "Mesh.hpp"
 
@@ -273,43 +274,71 @@ void Mesh::compute_vertex_normals() {
   }
 }
 
+bool operator <(const QVector3D& lhs, const QVector3D& rhs)
+{
+    return (lhs.x() < rhs.x())
+            || ((!(rhs.x() < lhs.x())) && (lhs.y() < rhs.y()))
+            || ((!(rhs.x() < lhs.x())) && (!(rhs.y() < lhs.y())) && (lhs.z() < rhs.z()));
+}
+
 void Mesh::storeVBO_groups() {
   for(long group_idx = 0; group_idx < (long)groups.size(); ++group_idx) {
+
+    QVector3D centerAverage = QVector3D(0,0,0);
+    set<QVector3D> groupVertices;
+    set<QVector3D>::iterator it;
+
     for(long mtl_idx = 0; mtl_idx < (long)groups[group_idx].materials.size(); mtl_idx++) {
       // Get face indexes that match current group and current material.
       vector<long> mtl_faces;
       for(long f = 0; f < (long)faces.size(); f++) {
-	if(faces[f].mtl_idx == mtl_idx && faces[f].group_idx == group_idx)
-	  mtl_faces.push_back(f);
+    if(faces[f].mtl_idx == mtl_idx && faces[f].group_idx == group_idx)
+      mtl_faces.push_back(f);
       }
       vector<QVector3D> tri_vert;
       vector<QVector3D> tri_norm;
-      vector<QVector2D> tri_tex;    
+      vector<QVector2D> tri_tex;
+
       // Collect triangles + normals + vertex coords for those matching
       // the current material and the current group.
       for(long mf = 0; mf < (long)mtl_faces.size(); mf++) {
-	long f = mtl_faces[mf];
-	tri_vert.push_back(vertices.at(faces[f].vert[0]));
-	tri_vert.push_back(vertices.at(faces[f].vert[1]));
-	tri_vert.push_back(vertices.at(faces[f].vert[2]));
+    long f = mtl_faces[mf];
 
-	tri_norm.push_back(normals.at(faces[f].vert[0]));
-	tri_norm.push_back(normals.at(faces[f].vert[1]));
-	tri_norm.push_back(normals.at(faces[f].vert[2]));
+    groupVertices.insert(vertices.at(faces[f].vert[0]));
+    groupVertices.insert(vertices.at(faces[f].vert[1]));
+    groupVertices.insert(vertices.at(faces[f].vert[2]));
 
-	if(faces[f].vt[0] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[0]));
-	else tri_tex.push_back(QVector2D(0,0));
+    tri_vert.push_back(vertices.at(faces[f].vert[0]));
+    tri_vert.push_back(vertices.at(faces[f].vert[1]));
+    tri_vert.push_back(vertices.at(faces[f].vert[2]));
 
-	if(faces[f].vt[1] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[1]));
-	else tri_tex.push_back(QVector2D(0,0));
-      
-	if(faces[f].vt[2] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[2]));
-	else tri_tex.push_back(QVector2D(0,0));      
+    tri_norm.push_back(normals.at(faces[f].vert[0]));
+    tri_norm.push_back(normals.at(faces[f].vert[1]));
+    tri_norm.push_back(normals.at(faces[f].vert[2]));
+
+    if(faces[f].vt[0] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[0]));
+    else tri_tex.push_back(QVector2D(0,0));
+
+    if(faces[f].vt[1] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[1]));
+    else tri_tex.push_back(QVector2D(0,0));
+
+    if(faces[f].vt[2] >= 0) tri_tex.push_back(texCoords.at(faces[f].vt[2]));
+    else tri_tex.push_back(QVector2D(0,0));
       }
       // For the current group and the current material in that group, fill the
       // vertex, normal, and texture buffers. 
       groups[group_idx].materials[mtl_idx].fill_buffers(tri_vert, tri_norm, tri_tex);
     }
+
+
+    for (it=groupVertices.begin(); it!=groupVertices.end(); ++it) {
+        centerAverage += *it;
+    }
+
+    centerAverage /= groupVertices.size();
+
+    groups[group_idx].center = centerAverage;
+    cout << "(" << groups[group_idx].center.x() << ", " << groups[group_idx].center.y() << ", " << groups[group_idx].center.z() << ")" << endl;
   }
 }
 

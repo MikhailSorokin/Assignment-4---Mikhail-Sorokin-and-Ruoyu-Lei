@@ -62,6 +62,9 @@ protected:
   bool animate_mtl_flag = false;
   bool cycle_group_flag = false;
 
+  bool rotate_wheels_flag = false;
+  bool swerve_wheels_flag = false;
+
   void mousePressEvent(QMouseEvent *event); 
   void mouseMoveEvent(QMouseEvent *event);
   void toggleRotate() { 

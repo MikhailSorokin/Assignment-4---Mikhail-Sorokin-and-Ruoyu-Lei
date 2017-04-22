@@ -83,6 +83,7 @@ struct Mesh_Face {
 };
 
 struct Mesh_Group {
+  QVector3D center;
   string name;
   vector<Mesh_Material> materials; // Each Mesh_Group has the same number of Mesh_Materials.
 };
