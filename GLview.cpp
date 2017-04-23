@@ -554,7 +554,7 @@ void GLview::cycle_group() {
   QString group_name_text = QString::fromStdString("Group name: " + obj_name);
   QMessageBox::information(this, "Group Name", group_name_text);
 
-  if (cycle_group_cont > 67) {
+  if (cycle_group_cont > 66) {
     cycle_group_cont = -1;
     cycle_group_flag = false;
   } else {
