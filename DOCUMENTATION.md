@@ -1,4 +1,4 @@
-﻿Authors - Mikhail Sorokin and Ruoyu Lei
+Authors - Mikhail Sorokin and Ruoyu Lei
 
 Programming Assignment 4: Materials, Texture, and Transformations
 ----------
@@ -29,8 +29,6 @@ There are four parts of this:
 
 ![foo](img/animate_camera.png)
 
-[PICTURE HERE]
-
 # Materials
 
 - Cycle through each material. 
@@ -43,7 +41,7 @@ To use this function, keep right clicking "cycle material" to iterate all materi
 - Animate the selected material. 
 This function iterates through every material and move them up and back down. It's implemented by translating using a 3D vector, which is (0,0,z). X and Y remains the same all the time and we change z to move it along the z axis.
 
-To use this function, you only need to right click "animate material" onces and each material will move up and down. This function finishes when all 8 materials have been iterated.
+NOTICE: to save time, we set key "6" to be the shortcut of this function, so you can keep pressing 6 to call this function and enter to omit the message box. This function finishes when all 8 materials have been iterated.
 
 ![foo](img/animate_material.png)
 
@@ -63,3 +61,6 @@ This function starts off in startVBO, and returns a list of all of the vertices 
 
 # BONUS
 
+- Swerving left and right. The car's front wheels are swerving left and right while the four wheels are rotating.
+
+![foo](img/bonus.png)

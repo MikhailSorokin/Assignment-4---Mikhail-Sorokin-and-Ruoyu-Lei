@@ -65,6 +65,10 @@ protected:
   bool rotate_wheels_flag = false;
   bool swerve_wheels_flag = false;
 
+  bool bonus_rotate_flag = false;
+
+  bool move_left = true;
+
   void mousePressEvent(QMouseEvent *event); 
   void mouseMoveEvent(QMouseEvent *event);
   void toggleRotate() { 
@@ -103,7 +107,6 @@ private slots:
   void cycle_group();
   void animate_rotate_wheels();
   void animate_swerve_wheels();  
-  
 };
 
 #endif

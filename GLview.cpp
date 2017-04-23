@@ -13,6 +13,7 @@ static double zaxis = 0.00;
 static int moveup_counter = 0;
 static int movedown_counter = 0;
 static int cycle_group_cont = -1;
+static double rotate_wheel_zaxis = 0.00;
 
 void Matrix2Quaternion(QQuaternion &Q, QMatrix4x4 &M) {
   Q.setScalar(sqrt( max( 0.0f, 1 + M(0,0)  + M(1,1) + M(2,2) ) ) / 2);
@@ -103,17 +104,32 @@ void GLview::paintGL() {
   }
 
   if (rotate_wheels_flag) {
-    zaxis += 300.f * 0.01f;
+    rotate_wheel_zaxis += 300.f * 0.01f;
   } else if (swerve_wheels_flag) {
-      if (moveup_counter < 45){
-        zaxis += 0.01 * 100.f;
-        moveup_counter++;
-      } else if (movedown_counter < 45){
-        zaxis -= 0.01 * 100.f;
-        movedown_counter++;
+      if (move_left) {
+        if (moveup_counter < 45){
+          zaxis += 0.01 * 100.f;
+          moveup_counter++;
+        } else if (movedown_counter < 45){
+          zaxis -= 0.01 * 100.f;
+          movedown_counter++;
+        } else {
+          moveup_counter = 0;
+          movedown_counter = 0;
+          move_left = false;
+        }
       } else {
-        moveup_counter = 0;
-        movedown_counter = 0;
+        if (moveup_counter < 45){
+          zaxis -= 0.01 * 100.f;
+          moveup_counter++;
+        } else if (movedown_counter < 45){
+          zaxis += 0.01 * 100.f;
+          movedown_counter++;
+        } else {
+          moveup_counter = 0;
+          movedown_counter = 0;
+          move_left = true;
+        }
       }
   }
 
@@ -142,21 +158,37 @@ void GLview::paintGL() {
         QVector3D moveup(0,0,zaxis);
         model.translate(moveup);
         
-      } else {
-        model.translate(mesh->model_translate);
-      }
-
-      if (rotate_wheels_flag && materials[mtl_idx].name == "wheel") {
-          cout << "(" << mesh->groups[group_idx].center.x() << ", " << mesh->groups[group_idx].center.y() << ", " << mesh->groups[group_idx].center.z() << ")" << endl;
+      } else if (rotate_wheels_flag && materials[mtl_idx].name == "wheel") {
+          // cout << "(" << mesh->groups[group_idx].center.x() << ", " << mesh->groups[group_idx].center.y() << ", " << mesh->groups[group_idx].center.z() << ")" << endl;
           model.translate(mesh->groups[group_idx].center);
-          model.rotate(zaxis, 1.0f, 0.0f, 0.0f);
+          model.rotate(rotate_wheel_zaxis, 1.0f, 0.0f, 0.0f);
           model.translate(-mesh->groups[group_idx].center);
       } else if (swerve_wheels_flag &&
                  (materials[mtl_idx].name == "tyre" || materials[mtl_idx].name == "wheel" || materials[mtl_idx].name == "tread")) {
-          model.translate(mesh->groups[group_idx].center);
-          model.rotate(zaxis, lookUp);
-          model.translate(-mesh->groups[group_idx].center);
+          
+          if (materials[mtl_idx].name == "wheel") {
+            if (group_idx == 17 || group_idx == 18) {
+              // front wheels
+              rotate_wheel_zaxis += 300.f * 0.01f;
+              model.translate(mesh->groups[group_idx].center);
+              model.rotate(zaxis, lookUp);
+              model.rotate(rotate_wheel_zaxis, 1.0f, 0.0f, 0.0f);
+              model.translate(-mesh->groups[group_idx].center);
+            } else {
+              // rear wheels
+              model.translate(mesh->groups[group_idx].center);
+              model.rotate(rotate_wheel_zaxis, 1.0f, 0.0f, 0.0f);
+              model.translate(-mesh->groups[group_idx].center);
+            }
+          } else if (group_idx == 42 || group_idx == 43 || group_idx == 44 || group_idx == 45 || group_idx == 46 || group_idx == 47){
+              
+              model.translate(mesh->groups[group_idx].center);
+              model.rotate(zaxis, lookUp);
+              model.translate(-mesh->groups[group_idx].center);
+              
+          }
       } else {
+          model.translate(mesh->model_translate);
           model.rotate(mesh->model_rotation);
       }
 
@@ -214,6 +246,7 @@ void GLview::keyPressGL(QKeyEvent* e) {
   case Qt::Key_R: toggleRotate();    break;
   case Qt::Key_S: toggleScale();     break;
   case Qt::Key_T: toggleTranslate();     break;
+  case Qt::Key_6: cycle_material();    break;
   case Qt::Key_7: cycle_group();    break;
   default: QOpenGLWidget::keyPressEvent(e);  break;
   }
@@ -474,17 +507,31 @@ void GLview::cycle_material() {
   cout << "implement cycle_material()" << endl;
   if (mesh == NULL) return;
 
-  vector<string> materials = {"default","tyre","body","generic","wheel","glow","glass","tread"};
-  cycle_mtl_flag = true;
-  counter = (counter + 1) % 8;
+    animate_mtl_flag = false;
+    cycle_group_flag = false;
 
+  vector<string> materials = {"default. Press 6 as a shortcut for this function.","tyre","body","generic","wheel","glow","glass","tread"};
+  cycle_mtl_flag = true;
+
+  if (counter < 7) {
+    counter = (counter + 1);
+  } else {
+    counter = 0;
+    cycle_mtl_flag = false;
+  }
+
+  if (cycle_mtl_flag){
   QString material_name_text = QString::fromStdString("Material name is " + materials[counter]);
   QMessageBox::information(this, "Material Name", material_name_text);
+  }
 }
 
 void GLview::animate_material() {
   cout << "implement animate_material()" << endl;
   if (mesh == NULL) return;
+
+  cycle_mtl_flag = false;
+  cycle_group_flag = false;
 
   zaxis = 0.00;
   moveup_counter = 0;
@@ -495,12 +542,15 @@ void GLview::animate_material() {
 }
 
 void GLview::cycle_group() {
-  if (mesh == NULL)
+  if (mesh == NULL) return;
 
-  cout << "To save time, press key 7 to call this function" << endl;
+  cycle_mtl_flag = false;
+    animate_mtl_flag = false;
+
+  // cout << "To save time, press key 7 to call this function" << endl;
 
   cycle_group_flag = true;
-  string obj_name = cycle_group_cont == -1 ? "default" : "object__" + to_string(cycle_group_cont);
+  string obj_name = cycle_group_cont == -1 ? "default. Press 7 as a shortcut for this function." : "object__" + to_string(cycle_group_cont);
   QString group_name_text = QString::fromStdString("Group name: " + obj_name);
   QMessageBox::information(this, "Group Name", group_name_text);
 
@@ -513,17 +563,23 @@ void GLview::cycle_group() {
 }
 
 void GLview::animate_rotate_wheels() {
-    zaxis = 0.00;
-    moveup_counter = 0;
-    movedown_counter = 0;
-    ani_mtl_cont = 0;
+  cycle_mtl_flag = false;
+    animate_mtl_flag = false;
+    cycle_group_flag = false;
+
+    rotate_wheel_zaxis = 0.00;
+    
     if (mesh == NULL) return; rotate_wheels_flag = !rotate_wheels_flag;
 }
 
 void GLview::animate_swerve_wheels() {
+    cycle_mtl_flag = false;
+    animate_mtl_flag = false;
+    cycle_group_flag = false;
+
     zaxis = 0.00;
     moveup_counter = 0;
     movedown_counter = 0;
-    ani_mtl_cont = 0;
+    
     if (mesh == NULL) return; swerve_wheels_flag = !swerve_wheels_flag;
 }
